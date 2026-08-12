@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.title = 'Kado Ulang Tahun untuk ' + CONFIG.nama + ' 🎁';
   setText('coverTitle', 'Selamat Ulang Tahun, ' + CONFIG.nama + '! 🎂');
   setText('greetTitle', 'Halo, ' + CONFIG.nama + '.');
-  setText('finaleSignoff', 'dengan sayang, ' + CONFIG.pengirim);
+  setText('finaleSignoff', 'dari akuu, ' + CONFIG.pengirim);
 
   const coverPhoto = document.getElementById('coverPhoto');
   coverPhoto.src = CONFIG.fotoSampul;
