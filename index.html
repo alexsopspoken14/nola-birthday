@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kado Ulang Tahun 🎁</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;0,900;1,600&family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ambient background: dusk gradient + drifting sparkles -->
+<div class="sky" aria-hidden="true"></div>
+<div class="sparkles" id="sparkles" aria-hidden="true"></div>
+<!-- musik latar, loop otomatis -->
+<audio id="bgMusic" loop preload="auto"></audio>
+<button class="music-toggle" id="musicToggle" type="button" aria-label="Mute/unmute musik" aria-pressed="false">🔊</button>
+<!-- clothesline progress -->
+<nav class="clothesline" id="clothesline" aria-label="Progres halaman">
+  <svg class="clothesline__wire" viewBox="0 0 900 40" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,8 Q450,40 900,8" />
+  </svg>
+  <div class="clothesline__pegs" id="pegs"></div>
+</nav>
+
+<main id="app">
+
+  <!-- PAGE 0 — COVER -->
+  <section class="page page--cover active" data-page="0" data-title="Sampul">
+    <div class="cover__bg" id="coverBg" aria-hidden="true"></div>
+    <div class="cover__content">
+      <p class="eyebrow">ini buat kamu yaaa</p>
+      <h1 class="hero-title" id="coverTitle">pibesdeyyyy 🎂</h1>
+
+      <figure class="polaroid polaroid--hero">
+        <div class="photo-wrap">
+          <img id="coverPhoto" src="" alt="Foto kamu" loading="lazy">
+        </div>
+        <figcaption>ini princes ✨</figcaption>
+      </figure>
+
+      <p class="cover__hint">dibuka pelan-pelan ya, banyak hal nunggu di dalam...</p>
+      <button class="btn btn--primary" data-next>Buka Kado 🎁</button>
+    </div>
+  </section>
+
+  <!-- PAGE 1 — SAPAAN -->
+  <section class="page page--greeting" data-page="1" data-title="Sapaan">
+    <div class="card">
+      <p class="kicker">halo dulu, ya</p>
+      <h2 class="section-title" id="greetTitle">Halo, Sayang.</h2>
+      <p class="typewriter" id="greetText"></p>
+      <div class="page-nav">
+        <button class="btn btn--ghost" data-back>← Kembali</button>
+        <button class="btn btn--primary" data-next>Lanjut →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 2 — ALBUM KAMU -->
+  <section class="page page--album" data-page="2" data-title="Album Kamu">
+    <div class="card card--wide">
+      <p class="kicker">album 01</p>
+      <h2 class="section-title">Album Kamu 📸</h2>
+      <p class="section-sub">beberapa momen kamu yang paling aku suka</p>
+      <div class="gallery gallery--polaroid" id="galleryKamu"></div>
+      <div class="page-nav">
+        <button class="btn btn--ghost" data-back>← Kembali</button>
+        <button class="btn btn--primary" data-next>Lanjut →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3 — KATA KATA -->
+  <section class="page page--quotes" data-page="3" data-title="Kata Kata">
+    <div class="card">
+      <p class="kicker">kata kata</p>
+      <h2 class="section-title">Buat Kamu 💭</h2>
+      <div class="quote-box">
+        <p class="quote-text" id="quoteText"></p>
+        <div class="quote-controls">
+          <button class="icon-btn" id="quotePrev" aria-label="Kata sebelumnya">‹</button>
+          <div class="quote-dots" id="quoteDots"></div>
+          <button class="icon-btn" id="quoteNext" aria-label="Kata berikutnya">›</button>
+        </div>
+      </div>
+      <div class="page-nav">
+        <button class="btn btn--ghost" data-back>← Kembali</button>
+        <button class="btn btn--primary" data-next>Lanjut →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 4 — GAME INTRO -->
+  <section class="page page--game-intro" data-page="4" data-title="Tantangan">
+    <div class="card">
+      <p class="kicker">tunggu dulu 👀</p>
+      <h2 class="section-title">Ada Tantangan Kecil</h2>
+      <p class="body-text">Album Kenangan nggak bisa dibuka gitu aja — kamu harus menyelesaikan
+        <strong>2 tantangan kecil</strong> dulu. Tenang, gampang & lucu kok. Siap?</p>
+      <div class="page-nav">
+        <button class="btn btn--ghost" data-back>← Kembali</button>
+        <button class="btn btn--primary" data-next>Mulai Tantangan 🎮</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 5 — GAME 1: TANGKAP CINTA -->
+  <section class="page page--game1" data-page="5" data-title="Tantangan 1">
+    <div class="card card--wide">
+      <p class="kicker">tantangan 1 dari 2</p>
+      <h2 class="section-title">Tangkap Cinta 💕</h2>
+      <p class="section-sub">Geser keranjangnya, tangkap hatinya, hindari petirnya ⚡</p>
+
+      <div class="game1-hud">
+        <span>Skor: <b id="g1Score">0</b> / <span id="g1Target">15</span></span>
+        <span>Waktu: <b id="g1Timer">30</b>s</span>
+      </div>
+
+      <div class="game1-arena" id="g1Arena">
+        <div class="game1-basket" id="g1Basket">🧺</div>
+        <div class="game1-overlay" id="g1Overlay">
+          <p id="g1OverlayText">Siap tangkap hati sebanyak-banyaknya?</p>
+          <button class="btn btn--primary" id="g1StartBtn">Mulai 💘</button>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <button class="btn btn--ghost" data-back>← Kembali</button>
+        <button class="btn btn--primary" data-next disabled id="g1NextBtn">Lanjut →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 6 — GAME 2: COCOKKAN KARTU -->
+  <section class="page page--game2" data-page="6" data-title="Tantangan 2">
+    <div class="card card--wide">
+      <p class="kicker">tantangan 2 dari 2</p>
+      <h2 class="section-title">Cocokkan Kartu 🃏</h2>
+      <p class="section-sub">Buka dua kartu, cari pasangannya, cocokkan semua</p>
+
+      <div class="game2-hud">
+        <span>Langkah: <b id="g2Moves">0</b></span>
+        <span>Pasangan: <b id="g2Matched">0</b> / <span id="g2Total">6</span></span>
+        <button class="btn btn--ghost btn--small" id="g2ResetBtn">Acak Ulang 🔀</button>
+      </div>
+
+      <div class="game2-grid" id="g2Grid"></div>
+
+      <div class="page-nav">
+        <button class="btn btn--ghost" data-back>← Kembali</button>
+        <button class="btn btn--primary" data-next disabled id="g2NextBtn">Buka Album Kenangan →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 7 — ALBUM KENANGAN -->
+  <section class="page page--memories" data-page="7" data-title="Album Kenangan">
+    <div class="card card--wide">
+      <p class="kicker">album 02 · terbuka 🔓</p>
+      <h2 class="section-title">Album Kenangan 🎞️</h2>
+      <p class="section-sub">ini dia, hadiah dari tantangan tadi</p>
+      <div class="gallery gallery--scrap" id="galleryKenangan"></div>
+      <div class="page-nav">
+        <button class="btn btn--ghost" data-back>← Kembali</button>
+        <button class="btn btn--primary" data-next>Lanjut →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 8 — FINALE -->
+  <section class="page page--finale" data-page="8" data-title="Penutup">
+    <div class="card card--letter">
+      <p class="kicker">sebelum kamu pergi...</p>
+      <h2 class="section-title" id="finaleTitle">Untuk Kamu 🌙</h2>
+      <p class="letter-text" id="finaleMessage"></p>
+
+      <div class="send-status" id="sendStatus">
+        <span class="send-status__dot"></span>
+        <span id="sendStatusText">menyiapkan pesan...</span>
+      </div>
+
+      <p class="letter-signoff" id="finaleSignoff"></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox__close" id="lightboxClose" aria-label="Tutup">✕</button>
+  <button class="lightbox__arrow lightbox__arrow--prev" id="lightboxPrev" aria-label="Sebelumnya">‹</button>
+  <img class="lightbox__img" id="lightboxImg" src="" alt="">
+  <button class="lightbox__arrow lightbox__arrow--next" id="lightboxNext" aria-label="Berikutnya">›</button>
+</div>
+
+<!-- confetti canvas layer (used on game wins + finale) -->
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/gallery.js"></script>
+<script src="js/games.js"></script>
+<script src="js/email.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

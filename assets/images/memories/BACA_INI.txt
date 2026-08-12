@@ -1,0 +1,1 @@
+Taruh foto-foto KENANGAN di sini untuk Album Kenangan (kenangan1.jpg, kenangan2.jpg, dst — sesuaikan nama & jumlahnya di js/config.js bagian albumKenangan).

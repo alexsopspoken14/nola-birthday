@@ -1,0 +1,588 @@
+/* ==========================================================================
+   DESIGN TOKENS
+   Konsep: "buku tempel kenangan di langit senja" — kartu krem hangat,
+   foto model polaroid & scrapbook, benang emas sebagai jahitan/pembatas,
+   dan tali jemuran foto sebagai progress bar (elemen khas web ini).
+   ========================================================================== */
+:root{
+  --dusk-1: #2C1730;
+  --dusk-2: #4A2545;
+  --dusk-3: #7A4067;
+  --rose: #F2A7B3;
+  --peach: #FFC9A8;
+  --lavender: #C9B6E4;
+  --cream: #FBF3E7;
+  --cream-2: #F5E9D8;
+  --gold: #E8B34C;
+  --ink: #3A1F2E;
+  --ink-soft: #6B4C5C;
+
+  --font-display: 'Fraunces', serif;
+  --font-hand: 'Caveat', cursive;
+  --font-body: 'Nunito', sans-serif;
+
+  --radius: 20px;
+  --shadow-card: 0 18px 40px -12px rgba(30, 10, 30, 0.45);
+  --shadow-soft: 0 8px 20px -6px rgba(30, 10, 30, 0.35);
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+/* ==========================================================================
+   MUSIC TOGGLE
+   ========================================================================== */
+.music-toggle{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 60;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(232,179,76,0.55);
+  background: rgba(44,23,48,0.75);
+  backdrop-filter: blur(6px);
+  color: var(--cream);
+  font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-soft);
+  transition: transform .2s var(--ease), background .2s var(--ease);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.music-toggle:hover{ transform: scale(1.08); }
+.music-toggle:active{ transform: scale(0.95); }
+*, *::before, *::after{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+body{
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--ink);
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+img{ max-width: 100%; display: block; }
+button{ font-family: inherit; cursor: pointer; }
+h1,h2,h3,p{ margin: 0; }
+
+:focus-visible{
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ==========================================================================
+   AMBIENT BACKGROUND
+   ========================================================================== */
+.sky{
+  position: fixed; inset: 0; z-index: -2;
+  background:
+    radial-gradient(60% 45% at 20% 15%, rgba(242,167,179,0.18), transparent 60%),
+    radial-gradient(50% 40% at 85% 80%, rgba(201,182,228,0.18), transparent 60%),
+    linear-gradient(160deg, var(--dusk-1) 0%, var(--dusk-2) 45%, var(--dusk-3) 100%);
+}
+.sparkles{ position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.sparkle{
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.5;
+  animation: twinkle linear infinite;
+}
+@keyframes twinkle{
+  0%, 100%{ opacity: 0.15; transform: translateY(0) scale(1); }
+  50%{ opacity: 0.75; transform: translateY(-14px) scale(1.3); }
+}
+
+/* ==========================================================================
+   CLOTHESLINE PROGRESS NAV (signature element)
+   ========================================================================== */
+.clothesline{
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  height: 58px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, rgba(44,23,48,0.85), rgba(44,23,48,0));
+  padding-top: env(safe-area-inset-top, 0);
+}
+.clothesline__wire{
+  position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
+  width: min(92vw, 640px); height: 40px;
+  overflow: visible; pointer-events: none;
+}
+.clothesline__wire path{
+  fill: none;
+  stroke: rgba(232,179,76,0.55);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+}
+.clothesline__pegs{
+  position: relative;
+  width: min(92vw, 640px);
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 0 2px;
+}
+.peg{
+  width: 15px; height: 15px; border-radius: 4px;
+  background: var(--cream-2);
+  border: 1.5px solid rgba(232,179,76,0.6);
+  cursor: default;
+  transform: translateY(6px) rotate(-4deg);
+  transition: transform .25s var(--ease), background .25s, box-shadow .25s;
+  position: relative;
+}
+.peg::after{
+  content: '';
+  position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+  width: 2px; height: 6px; background: rgba(232,179,76,0.6);
+}
+.peg.is-visited{ cursor: pointer; background: var(--peach); }
+.peg.is-current{
+  background: var(--gold);
+  transform: translateY(3px) rotate(3deg) scale(1.35);
+  box-shadow: 0 0 0 3px rgba(232,179,76,0.25), 0 4px 10px rgba(0,0,0,0.35);
+}
+.peg.is-locked{ opacity: 0.35; }
+
+/* ==========================================================================
+   PAGE LAYOUT & TRANSITIONS
+   ========================================================================== */
+#app{
+  position: relative;
+  min-height: 100vh;
+  padding: 92px 18px 48px;
+  display: flex; align-items: center; justify-content: center;
+}
+.page{
+  width: 100%; max-width: 640px;
+  display: none;
+  opacity: 0; transform: translateY(18px);
+}
+.page.active{
+  display: block;
+  animation: pageIn .55s var(--ease) forwards;
+}
+@keyframes pageIn{
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+.card{
+  background: var(--cream);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 36px 28px;
+  position: relative;
+  background-image:
+    linear-gradient(var(--cream), var(--cream)),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0 2px, transparent 2px 4px);
+  background-blend-mode: normal;
+}
+.card--wide{ padding: 32px 22px; }
+.card--letter{ padding: 42px 30px; }
+
+.kicker{
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  color: var(--ink-soft);
+  margin-bottom: 2px;
+}
+.eyebrow{
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  color: var(--cream-2);
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+.section-title{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+.section-sub{
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.body-text{
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 22px;
+}
+
+.page-nav{
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; margin-top: 28px;
+}
+
+/* dotted gold stitch divider, reusable */
+.stitch{
+  border: none; border-top: 2px dotted rgba(232,179,76,0.55);
+  margin: 22px 0;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.btn{
+  border: none; border-radius: 999px;
+  padding: 14px 26px;
+  font-weight: 800;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease), opacity .18s;
+}
+.btn--primary{
+  background: linear-gradient(135deg, var(--peach), var(--rose));
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+}
+.btn--primary:hover{ transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 24px -8px rgba(242,167,179,0.55); }
+.btn--primary:active{ transform: translateY(0) scale(0.98); }
+.btn--primary:disabled{
+  opacity: 0.45; cursor: not-allowed; box-shadow: none; transform: none;
+}
+.btn--ghost{
+  background: transparent;
+  color: var(--ink-soft);
+  border: 2px solid rgba(58,31,46,0.18);
+}
+.btn--ghost:hover{ border-color: var(--gold); color: var(--ink); }
+.btn--small{ padding: 8px 16px; font-size: 0.85rem; }
+
+.icon-btn{
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 2px solid rgba(58,31,46,0.15);
+  background: var(--cream);
+  font-size: 1.2rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-soft);
+}
+.icon-btn:hover{ border-color: var(--gold); color: var(--ink); }
+
+/* ==========================================================================
+   COVER PAGE
+   ========================================================================== */
+.page--cover{ text-align: center; }
+.cover__bg{
+  position: fixed; inset: 0; z-index: -1;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1s ease;
+}
+.cover__bg.is-loaded{ opacity: 0.22; }
+.cover__bg::after{
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(44,23,48,0.75), rgba(74,37,69,0.55));
+}
+.hero-title{
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.1rem, 8vw, 3.4rem);
+  color: var(--cream);
+  line-height: 1.1;
+  margin-bottom: 26px;
+  text-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+.cover__hint{
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  color: var(--cream-2);
+  margin: 18px 0 24px;
+}
+
+/* ==========================================================================
+   POLAROID (Album Kamu)
+   ========================================================================== */
+.polaroid{
+  background: var(--cream);
+  padding: 12px 12px 42px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-soft);
+  display: inline-block;
+  margin: 0;
+  transition: transform .25s var(--ease), box-shadow .25s;
+}
+.polaroid:hover{ transform: scale(1.04) rotate(0deg) !important; box-shadow: var(--shadow-card); z-index: 2; }
+.polaroid--hero{
+  width: min(72vw, 260px);
+  margin: 0 auto;
+}
+.photo-wrap{
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(135deg, var(--lavender), var(--rose));
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.photo-wrap img{ width: 100%; height: 100%; object-fit: cover; }
+.photo-wrap.img-error img{ display: none; }
+.photo-wrap::after{
+  content: '📷 taruh foto di sini';
+  display: none;
+  position: absolute; inset: 0;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 10px;
+  font-family: var(--font-body); font-weight: 700; font-size: 0.85rem;
+  color: rgba(58,31,46,0.55);
+}
+.photo-wrap.img-error::after{ display: flex; }
+.polaroid figcaption{
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-top: 10px;
+  min-height: 1em;
+}
+
+.gallery{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px 14px;
+  margin-bottom: 6px;
+}
+.gallery--polaroid .polaroid{ cursor: pointer; }
+.gallery--polaroid .polaroid:nth-child(3n+1){ transform: rotate(-3deg); }
+.gallery--polaroid .polaroid:nth-child(3n+2){ transform: rotate(2deg); }
+.gallery--polaroid .polaroid:nth-child(3n+3){ transform: rotate(-1.5deg); }
+
+/* ==========================================================================
+   SCRAPBOOK FRAME (Album Kenangan) — deliberately different from polaroid
+   ========================================================================== */
+.gallery--scrap{ grid-template-columns: repeat(2, 1fr); }
+.scrap{
+  position: relative;
+  background: var(--cream);
+  padding: 8px;
+  border-radius: 3px;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: transform .25s var(--ease), box-shadow .25s;
+}
+.scrap:hover{ transform: scale(1.04) rotate(0deg) !important; box-shadow: var(--shadow-card); z-index: 2; }
+.scrap .photo-wrap{ aspect-ratio: 4/5; background: linear-gradient(135deg, var(--gold), var(--peach)); }
+.scrap::before{
+  content: '';
+  position: absolute; top: -8px; left: 18px;
+  width: 46px; height: 20px;
+  background: rgba(242,167,179,0.55);
+  transform: rotate(-6deg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.gallery--scrap .scrap:nth-child(2n)::before{ left: auto; right: 18px; background: rgba(201,182,228,0.6); transform: rotate(6deg); }
+.gallery--scrap .scrap:nth-child(3n+1){ transform: rotate(2deg); }
+.gallery--scrap .scrap:nth-child(3n+2){ transform: rotate(-2deg); }
+.scrap figcaption{
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-top: 8px;
+  min-height: 1em;
+}
+
+/* ==========================================================================
+   QUOTES
+   ========================================================================== */
+.quote-box{
+  background: var(--cream-2);
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  min-height: 140px;
+  display: flex; flex-direction: column; justify-content: center; gap: 18px;
+}
+.quote-text{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.quote-controls{ display: flex; align-items: center; justify-content: center; gap: 14px; }
+.quote-dots{ display: flex; gap: 6px; }
+.quote-dot{ width: 7px; height: 7px; border-radius: 50%; background: rgba(58,31,46,0.2); transition: background .2s, transform .2s; }
+.quote-dot.is-active{ background: var(--gold); transform: scale(1.3); }
+
+/* ==========================================================================
+   TYPEWRITER
+   ========================================================================== */
+.typewriter{
+  font-size: 1.08rem; line-height: 1.75; color: var(--ink);
+  margin: 6px 0 6px; min-height: 5.5em;
+}
+.typewriter .cursor{
+  display: inline-block; width: 2px; background: var(--ink-soft);
+  animation: blink 1s step-start infinite; margin-left: 1px;
+}
+@keyframes blink{ 50%{ opacity: 0; } }
+
+/* ==========================================================================
+   GAME 1 — TANGKAP CINTA
+   ========================================================================== */
+.game1-hud{
+  display: flex; justify-content: space-between;
+  font-weight: 800; margin-bottom: 12px; color: var(--ink-soft);
+}
+.game1-arena{
+  position: relative;
+  height: 340px;
+  background: linear-gradient(180deg, rgba(201,182,228,0.25), rgba(242,167,179,0.15));
+  border-radius: 16px;
+  overflow: hidden;
+  touch-action: none;
+  border: 2px dashed rgba(232,179,76,0.4);
+}
+.falling-item{
+  position: absolute; top: -40px;
+  font-size: 1.8rem;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+  will-change: transform;
+  user-select: none;
+}
+.game1-basket{
+  position: absolute; bottom: 8px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.6rem;
+  cursor: grab;
+  user-select: none;
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
+}
+.game1-overlay{
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; text-align: center; padding: 24px;
+  background: rgba(251,243,231,0.92);
+  font-weight: 700; color: var(--ink);
+}
+.game1-overlay.is-hidden{ display: none; }
+
+/* ==========================================================================
+   GAME 2 — MEMORY MATCH
+   ========================================================================== */
+.game2-hud{
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-weight: 800; margin-bottom: 14px; color: var(--ink-soft); flex-wrap: wrap;
+}
+.game2-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  perspective: 800px;
+  margin-bottom: 6px;
+}
+.g2-card{
+  aspect-ratio: 3/4;
+  position: relative;
+  cursor: pointer;
+}
+.g2-card__inner{
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .45s var(--ease);
+  border-radius: 10px;
+}
+.g2-card.is-flipped .g2-card__inner{ transform: rotateY(180deg); }
+.g2-card.is-matched .g2-card__inner{ transform: rotateY(180deg); opacity: 0.55; }
+.g2-face{
+  position: absolute; inset: 0;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  backface-visibility: hidden;
+  font-size: 1.7rem;
+  box-shadow: var(--shadow-soft);
+}
+.g2-face--back{
+  background: linear-gradient(135deg, var(--dusk-3), var(--dusk-2));
+  color: var(--gold);
+}
+.g2-face--front{
+  background: var(--cream);
+  transform: rotateY(180deg);
+}
+
+/* ==========================================================================
+   FINALE / LETTER
+   ========================================================================== */
+.page--finale .card--letter{ text-align: left; }
+.letter-text{
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: var(--ink);
+  white-space: pre-line;
+}
+.send-status{
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 26px; padding: 12px 16px;
+  background: var(--cream-2); border-radius: 999px;
+  font-weight: 700; font-size: 0.9rem; color: var(--ink-soft);
+}
+.send-status__dot{
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--gold);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.send-status.is-sent .send-status__dot{ animation: none; background: #6FBF73; }
+.send-status.is-error .send-status__dot{ animation: none; background: #D9704F; }
+@keyframes pulse{ 0%,100%{ transform: scale(1); opacity: 1; } 50%{ transform: scale(1.4); opacity: 0.5; } }
+.letter-signoff{
+  font-family: var(--font-hand);
+  font-size: 1.6rem;
+  color: var(--ink-soft);
+  margin-top: 22px;
+}
+
+/* ==========================================================================
+   LIGHTBOX
+   ========================================================================== */
+.lightbox{
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(20,10,22,0.92);
+  display: none; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.lightbox.is-open{ display: flex; }
+.lightbox__img{
+  max-width: min(92vw, 560px); max-height: 80vh;
+  border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.lightbox__close{
+  position: absolute; top: 18px; right: 18px;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(251,243,231,0.15); border: none; color: var(--cream);
+  font-size: 1.1rem;
+}
+.lightbox__arrow{
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(251,243,231,0.15); border: none; color: var(--cream);
+  font-size: 1.6rem;
+}
+.lightbox__arrow--prev{ left: 14px; }
+.lightbox__arrow--next{ right: 14px; }
+.lightbox__arrow:hover, .lightbox__close:hover{ background: rgba(251,243,231,0.3); }
+
+/* ==========================================================================
+   CONFETTI CANVAS
+   ========================================================================== */
+#confettiCanvas{
+  position: fixed; inset: 0; z-index: 90;
+  pointer-events: none;
+  width: 100%; height: 100%;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (min-width: 560px){
+  .gallery{ grid-template-columns: repeat(3, 1fr); }
+  .game2-grid{ grid-template-columns: repeat(4, 1fr); max-width: 420px; margin-inline: auto; }
+}
+@media (max-width: 380px){
+  .card{ padding: 28px 18px; }
+  .polaroid--hero{ width: 78vw; }
+  .game2-grid{ gap: 7px; }
+}

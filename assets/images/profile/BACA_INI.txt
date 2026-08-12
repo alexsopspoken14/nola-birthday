@@ -1,0 +1,1 @@
+Taruh foto-foto ORANGNYA di sini untuk Album Kamu (foto1.jpg, foto2.jpg, dst — sesuaikan nama & jumlahnya di js/config.js bagian albumKamu).
