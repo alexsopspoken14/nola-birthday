@@ -13,9 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let pegEls = [];
 
   /* ---------- isi konten dinamis dari CONFIG ---------- */
-  document.title = 'Kado Ulang Tahun untuk ' + CONFIG.nama + ' 🎁';
-  setText('coverTitle', 'Selamat Ulang Tahun, ' + CONFIG.nama + '! 🎂');
-  setText('greetTitle', 'Halo, ' + CONFIG.nama + '.');
+  document.title = 'Web buat kamuu ' + CONFIG.nama + ' 🎁';
+  setText('coverTitle', 'Pibesdeyyy, ' + CONFIG.nama + '! 🎂');
+  setText('greetTitle', 'aloo, ' + CONFIG.nama + '.');
   setText('finaleSignoff', 'dari akuu, ' + CONFIG.pengirim);
 
   const coverPhoto = document.getElementById('coverPhoto');
